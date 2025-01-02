@@ -26,6 +26,8 @@ from gbstats.frequentist.tests import (
     SequentialConfig,
     SequentialTwoSidedTTest,
     TwoSidedTTest,
+    OneSidedTreatmentGreaterTTest,
+    OneSidedTreatmentLesserTTest,
 )
 from gbstats.models.results import (
     BaselineResponse,
@@ -193,7 +195,13 @@ def get_configured_test(
     test_index: int,
     analysis: AnalysisSettingsForStatsEngine,
     metric: MetricSettingsForStatsEngine,
-) -> Union[EffectBayesianABTest, SequentialTwoSidedTTest, TwoSidedTTest]:
+) -> Union[
+    EffectBayesianABTest,
+    SequentialTwoSidedTTest,
+    TwoSidedTTest,
+    OneSidedTreatmentGreaterTTest,
+    OneSidedTreatmentLesserTTest,
+]:
 
     stat_a = variation_statistic_from_metric_row(row, "baseline", metric)
     stat_b = variation_statistic_from_metric_row(row, f"v{test_index}", metric)
@@ -217,14 +225,27 @@ def get_configured_test(
                 ),
             )
         else:
-            return TwoSidedTTest(
-                stat_a,
-                stat_b,
-                FrequentistConfig(
-                    **base_config,
-                    alpha=analysis.alpha,
-                ),
-            )
+            # This is where we add the OneSidedTTest
+            # OneSidedTreatmentLesserTTest
+            if analysis.oneSidedTest is True:
+                return OneSidedTreatmentGreaterTTest(
+                    stat_a,
+                    stat_b,
+                    FrequentistConfig(
+                        **base_config,
+                        alpha=analysis.alpha,
+                    ),
+                )
+            else:
+                return TwoSidedTTest(
+                    stat_a,
+                    stat_b,
+                    FrequentistConfig(
+                        **base_config,
+                        alpha=analysis.alpha,
+                    ),
+                )
+
     else:
         assert type(stat_a) is type(stat_b), "stat_a and stat_b must be of same type."
         prior = GaussianPrior(

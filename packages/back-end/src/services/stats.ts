@@ -60,6 +60,7 @@ export interface AnalysisSettingsForStatsEngine {
   baseline_index: number;
   dimension: string;
   stats_engine: string;
+  oneSidedTest: boolean;
   sequential_testing_enabled: boolean;
   sequential_tuning_parameter: number;
   difference_type: string;
@@ -168,6 +169,7 @@ export function getAnalysisSettingsForStatsEngine(
     baseline_index: settings.baselineVariationIndex ?? 0,
     dimension: settings.dimensions[0] || "",
     stats_engine: settings.statsEngine,
+    oneSidedTest: settings.oneSidedTest ?? false,
     sequential_testing_enabled: settings.sequentialTesting ?? false,
     sequential_tuning_parameter: sequentialTestingTuningParameterNumber,
     difference_type: settings.differenceType,
@@ -231,16 +233,20 @@ results = [asdict(analysis) for analysis in process_multiple_experiment_results(
 print(json.dumps({
   'results': results,
   'time': time.time() - start
-}, allow_nan=False))`,
+}, allow_nan=True))`, //need to set to True so Infinity values are dumped -- add validation for NaN/null somewhere and throw
     {}
   );
-
   try {
+    // Infinity isn't valid JSON, stringify turns it into nulls so when it's serialized and sent to frontend it turns to null
+    if (result) {
+      result[0] = result?.[0].replace(/Infinity/g, "1e1000");
+      result[0] = result?.[0].replace(/-Infinity/g, "-1e1000");
+    }
+
     const parsed: {
       results: MultipleExperimentMetricAnalysis[];
       time: number;
     } = JSON.parse(result?.[0]);
-
     logger.debug(`StatsEngine: Python time: ${parsed.time}`);
     logger.debug(
       `StatsEngine: Typescript time: ${(Date.now() - start) / 1000}`
