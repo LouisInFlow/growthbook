@@ -83,7 +83,9 @@ export default function ConfigureReport({
   const [useToday, setUseToday] = useState(
     !form.watch("experimentAnalysisSettings.dateEnded")
   );
-
+  const [oneSidedTest, setOneSidedTest] = useState(
+    form.watch("experimentAnalysisSettings.oneSidedTest")
+  );
   const { data: experimentData } = useApi<{
     experiment: ExperimentInterfaceStringDates;
   }>(`/experiment/${report.experimentId}`);
@@ -482,6 +484,22 @@ export default function ConfigureReport({
               allowUndefined={false}
               className=""
             />
+            {form.getValues("experimentAnalysisSettings.statsEngine") ===
+              "frequentist" && (
+              <div className="my-3">
+                <Checkbox
+                  label="One Sided Test"
+                  value={oneSidedTest || false}
+                  setValue={() => {
+                    setOneSidedTest(!oneSidedTest);
+                    form.setValue(
+                      "experimentAnalysisSettings.oneSidedTest",
+                      !oneSidedTest // should set to false if bayesian selected
+                    );
+                  }}
+                />
+              </div>
+            )}
             <SelectField
               label={
                 <PremiumTooltip commercialFeature="regression-adjustment">
