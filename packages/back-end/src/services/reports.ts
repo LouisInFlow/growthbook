@@ -131,6 +131,7 @@ export function reportArgsFromSnapshot(
     skipPartialData: snapshot.settings.skipPartialData,
     attributionModel: snapshot.settings.attributionModel,
     statsEngine: analysisSettings.statsEngine,
+    oneSidedTest: analysisSettings.oneSidedTest,
     regressionAdjustmentEnabled: analysisSettings.regressionAdjusted,
     settingsForSnapshotMetrics: getMetricSnapshotSettingsFromSnapshot(
       snapshot.settings,
@@ -150,6 +151,7 @@ export function getAnalysisSettingsFromReportArgs(
   return {
     dimensions: args.dimension ? [args.dimension] : [],
     statsEngine: args.statsEngine || DEFAULT_STATS_ENGINE,
+    oneSidedTest: args.oneSidedTest || false,
     regressionAdjusted: args.regressionAdjustmentEnabled,
     pValueCorrection: null,
     sequentialTesting: args.sequentialTestingEnabled,
@@ -312,7 +314,6 @@ export async function createReportSnapshot({
     if (!snapshotData)
       throw new Error("Unable to create snapshot for report: no data");
   }
-
   const phaseIndex = snapshotData.phase;
 
   const project = experiment?.project
@@ -368,10 +369,10 @@ export async function createReportSnapshot({
     statsEngine,
     report.experimentAnalysisSettings,
     organization,
+    report.experimentAnalysisSettings.oneSidedTest ?? false,
     regressionAdjustmentEnabled,
     report.experimentAnalysisSettings.dimension
   );
-
   const snapshotSettings = getReportSnapshotSettings({
     report,
     analysisSettings,
@@ -423,9 +424,7 @@ export async function createReportSnapshot({
     data: snapshotData,
     context,
   });
-
   const integration = getSourceIntegrationObject(context, datasource, true);
-
   const queryRunner = new ExperimentResultsQueryRunner(
     context,
     snapshot,
@@ -657,6 +656,7 @@ export async function generateExperimentReportSSRData({
     "metricDefaults",
     "multipleExposureMinPercent",
     "statsEngine",
+    "oneSidedTest",
     "pValueThreshold",
     "pValueCorrection",
     "regressionAdjustmentEnabled",

@@ -123,6 +123,7 @@ export interface ExperimentReportArgs {
   skipPartialData?: boolean;
   attributionModel?: AttributionModel;
   statsEngine?: StatsEngine;
+  oneSidedTest?: boolean;
   regressionAdjustmentEnabled?: boolean;
   settingsForSnapshotMetrics?: MetricSnapshotSettings[];
   useLatestPriorSettings?: boolean;

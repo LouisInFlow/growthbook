@@ -567,7 +567,6 @@ export async function getSnapshots(
   const ids = idsString.split(",");
   const experimentObjs = await getExperimentsByIds(context, ids);
   const snapshots = await _getSnapshots(context, experimentObjs);
-
   res.status(200).json({
     status: 200,
     snapshots: snapshots,
@@ -2369,6 +2368,7 @@ export async function createExperimentSnapshot({
     experiment,
     org,
     regressionAdjustmentEnabled,
+    false,
     dimension
   );
 
@@ -2453,6 +2453,7 @@ export async function postSnapshot(
       statsEngine,
       experiment,
       org,
+      false,
       false,
       dimension
     );

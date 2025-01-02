@@ -325,6 +325,7 @@ export function getDefaultExperimentAnalysisSettings(
   statsEngine: StatsEngine,
   experiment: ExperimentInterface | ExperimentReportAnalysisSettings,
   organization: OrganizationInterface,
+  oneSidedTest: boolean,
   regressionAdjustmentEnabled?: boolean,
   dimension?: string
 ): ExperimentSnapshotAnalysisSettings {
@@ -336,6 +337,7 @@ export function getDefaultExperimentAnalysisSettings(
     : false;
   return {
     statsEngine,
+    oneSidedTest,
     dimensions: dimension ? [dimension] : [],
     regressionAdjusted:
       hasRegressionAdjustmentFeature &&

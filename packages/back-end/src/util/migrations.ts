@@ -719,6 +719,7 @@ export function migrateSnapshot(
           status: snapshot.error ? "error" : "success",
           settings: {
             statsEngine: statsEngine || DEFAULT_STATS_ENGINE,
+            oneSidedTest: false,
             dimensions: snapshot.dimension ? [snapshot.dimension] : [],
             pValueCorrection: null,
             regressionAdjusted,

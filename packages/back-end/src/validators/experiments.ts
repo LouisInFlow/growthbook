@@ -152,6 +152,7 @@ export const experimentAnalysisSettings = z
     sequentialTestingEnabled: z.boolean().optional(),
     sequentialTestingTuningParameter: z.number().optional(),
     statsEngine: z.enum(statsEngines).optional(),
+    oneSidedTest: z.boolean().optional(),
   })
   .strict();
 export type ExperimentAnalysisSettings = z.infer<

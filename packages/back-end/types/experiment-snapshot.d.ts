@@ -106,6 +106,7 @@ export interface DimensionForSnapshot {
 export interface ExperimentSnapshotAnalysisSettings {
   dimensions: string[];
   statsEngine: StatsEngine;
+  oneSidedTest: boolean;
   regressionAdjusted?: boolean;
   sequentialTesting?: boolean;
   sequentialTestingTuningParameter?: number;
